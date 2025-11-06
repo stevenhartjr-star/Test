@@ -1,0 +1,9 @@
+{
+  "name": "Gemini Audio Assistant",
+  "description": "An interactive AI assistant for open conversations on any topic, including adult themes, powered by the Gemini Live API.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera",
+    "display-capture"
+  ]
+}
