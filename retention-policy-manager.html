@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Retention Policy Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Firebase Configuration (GCC High compliant)
+        // Note: Replace these with your actual GCC High Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        let db;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+
+        // App ID for Firestore path (this would typically come from your app context)
+        const APP_ID = "legal-retention-policies";
+        const COLLECTION_PATH = `artifacts/${APP_ID}/public/data/retentionPolicies`;
+
+        // Main Application Component
+        function RetentionPolicyManager() {
+            const [policies, setPolicies] = useState([]);
+            const [filteredPolicies, setFilteredPolicies] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [searchTerm, setSearchTerm] = useState("");
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            const [editingPolicy, setEditingPolicy] = useState(null);
+            const [formData, setFormData] = useState({
+                documentType: "",
+                retentionPeriod: "",
+                dispositionAction: "",
+                authorityCitation: ""
+            });
+
+            // Load policies from Firestore
+            useEffect(() => {
+                loadPolicies();
+            }, []);
+
+            // Filter policies when search term or policies change
+            useEffect(() => {
+                if (searchTerm.trim() === "") {
+                    setFilteredPolicies(policies);
+                } else {
+                    const term = searchTerm.toLowerCase();
+                    const filtered = policies.filter(policy =>
+                        policy.documentType.toLowerCase().includes(term) ||
+                        policy.authorityCitation.toLowerCase().includes(term) ||
+                        policy.retentionPeriod.toLowerCase().includes(term) ||
+                        policy.dispositionAction.toLowerCase().includes(term)
+                    );
+                    setFilteredPolicies(filtered);
+                }
+            }, [searchTerm, policies]);
+
+            const loadPolicies = async () => {
+                try {
+                    setLoading(true);
+                    setError(null);
+
+                    if (!db) {
+                        throw new Error("Firestore not initialized. Please configure Firebase.");
+                    }
+
+                    const snapshot = await db.collection(COLLECTION_PATH).orderBy("documentType").get();
+                    const policiesData = [];
+                    snapshot.forEach(doc => {
+                        policiesData.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    setPolicies(policiesData);
+                    setFilteredPolicies(policiesData);
+                } catch (err) {
+                    console.error("Error loading policies:", err);
+                    setError(err.message);
+                    // Use sample data for demo purposes if Firestore is not configured
+                    const sampleData = [
+                        {
+                            id: "sample-1",
+                            documentType: "Employee Records",
+                            retentionPeriod: "7 years",
+                            dispositionAction: "Securely Destroy",
+                            authorityCitation: "29 CFR 1627.3"
+                        },
+                        {
+                            id: "sample-2",
+                            documentType: "Financial Audits",
+                            retentionPeriod: "7 years",
+                            dispositionAction: "Archive",
+                            authorityCitation: "SOX Section 802"
+                        },
+                        {
+                            id: "sample-3",
+                            documentType: "Contracts",
+                            retentionPeriod: "10 years",
+                            dispositionAction: "Archive",
+                            authorityCitation: "Internal Policy 301.A"
+                        }
+                    ];
+                    setPolicies(sampleData);
+                    setFilteredPolicies(sampleData);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const openModal = (policy = null) => {
+                if (policy) {
+                    setEditingPolicy(policy);
+                    setFormData({
+                        documentType: policy.documentType,
+                        retentionPeriod: policy.retentionPeriod,
+                        dispositionAction: policy.dispositionAction,
+                        authorityCitation: policy.authorityCitation
+                    });
+                } else {
+                    setEditingPolicy(null);
+                    setFormData({
+                        documentType: "",
+                        retentionPeriod: "",
+                        dispositionAction: "",
+                        authorityCitation: ""
+                    });
+                }
+                setIsModalOpen(true);
+            };
+
+            const closeModal = () => {
+                setIsModalOpen(false);
+                setEditingPolicy(null);
+                setFormData({
+                    documentType: "",
+                    retentionPeriod: "",
+                    dispositionAction: "",
+                    authorityCitation: ""
+                });
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: value
+                }));
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                // Validation
+                if (!formData.documentType || !formData.retentionPeriod ||
+                    !formData.dispositionAction || !formData.authorityCitation) {
+                    alert("Please fill in all fields");
+                    return;
+                }
+
+                try {
+                    if (!db) {
+                        alert("Firestore not configured. This is a demo mode.");
+                        // In demo mode, just update local state
+                        if (editingPolicy) {
+                            setPolicies(prev => prev.map(p =>
+                                p.id === editingPolicy.id ? { ...p, ...formData } : p
+                            ));
+                        } else {
+                            const newPolicy = {
+                                id: `demo-${Date.now()}`,
+                                ...formData
+                            };
+                            setPolicies(prev => [...prev, newPolicy]);
+                        }
+                        closeModal();
+                        return;
+                    }
+
+                    if (editingPolicy) {
+                        // Update existing policy
+                        await db.collection(COLLECTION_PATH).doc(editingPolicy.id).update(formData);
+                    } else {
+                        // Create new policy
+                        await db.collection(COLLECTION_PATH).add({
+                            ...formData,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+
+                    await loadPolicies();
+                    closeModal();
+                } catch (err) {
+                    console.error("Error saving policy:", err);
+                    alert(`Error saving policy: ${err.message}`);
+                }
+            };
+
+            const handleDelete = async (policyId) => {
+                if (!confirm("Are you sure you want to delete this retention policy?")) {
+                    return;
+                }
+
+                try {
+                    if (!db) {
+                        // Demo mode
+                        setPolicies(prev => prev.filter(p => p.id !== policyId));
+                        return;
+                    }
+
+                    await db.collection(COLLECTION_PATH).doc(policyId).delete();
+                    await loadPolicies();
+                } catch (err) {
+                    console.error("Error deleting policy:", err);
+                    alert(`Error deleting policy: ${err.message}`);
+                }
+            };
+
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8">
+                            <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">
+                                Document Retention Policy Manager
+                            </h1>
+                            <p className="text-center text-gray-400 text-sm">
+                                Legal Department - GCC High Compliant
+                            </p>
+                        </div>
+
+                        {/* Search and Add Section */}
+                        <div className="bg-gray-800 shadow-xl rounded-lg p-4 md:p-6 mb-6">
+                            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+                                <div className="flex-1">
+                                    <input
+                                        type="text"
+                                        placeholder="Search by document type, citation, period, or action..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => openModal()}
+                                    className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-800 whitespace-nowrap"
+                                >
+                                    + Add New Policy
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Error Message */}
+                        {error && !db && (
+                            <div className="bg-yellow-900 bg-opacity-50 border border-yellow-600 text-yellow-200 px-4 py-3 rounded-lg mb-6">
+                                <p className="font-semibold">Demo Mode</p>
+                                <p className="text-sm">Firestore not configured. Using sample data. Please configure Firebase to persist data.</p>
+                            </div>
+                        )}
+
+                        {/* Loading State */}
+                        {loading ? (
+                            <div className="text-center py-12">
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
+                                <p className="mt-4 text-gray-400">Loading policies...</p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Policies List */}
+                                {filteredPolicies.length === 0 ? (
+                                    <div className="bg-gray-800 shadow-xl rounded-lg p-12 text-center">
+                                        <svg className="mx-auto h-16 w-16 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p className="text-gray-400 text-lg">
+                                            {searchTerm ? "No policies match your search" : "No retention policies yet"}
+                                        </p>
+                                        <p className="text-gray-500 text-sm mt-2">
+                                            {searchTerm ? "Try a different search term" : "Click 'Add New Policy' to create one"}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-4">
+                                        {filteredPolicies.map((policy) => (
+                                            <div
+                                                key={policy.id}
+                                                className="bg-gray-800 shadow-lg rounded-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-teal-500"
+                                            >
+                                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                                    <div className="flex-1 space-y-3">
+                                                        <div>
+                                                            <h3 className="text-xl font-bold text-teal-400 mb-1">
+                                                                {policy.documentType}
+                                                            </h3>
+                                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-900 text-blue-200">
+                                                                    {policy.retentionPeriod}
+                                                                </span>
+                                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-900 text-purple-200">
+                                                                    {policy.dispositionAction}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm text-gray-400">
+                                                                <span className="font-semibold text-gray-300">Authority/Citation:</span>{" "}
+                                                                {policy.authorityCitation}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex md:flex-col gap-2">
+                                                        <button
+                                                            onClick={() => openModal(policy)}
+                                                            className="flex-1 md:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(policy.id)}
+                                                            className="flex-1 md:flex-initial bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Policy Count */}
+                                {filteredPolicies.length > 0 && (
+                                    <div className="mt-6 text-center text-gray-400 text-sm">
+                                        Showing {filteredPolicies.length} of {policies.length} {policies.length === 1 ? 'policy' : 'policies'}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    {/* Modal for Add/Edit */}
+                    {isModalOpen && (
+                        <div className="fixed inset-0 z-50 overflow-y-auto modal-backdrop fade-in" onClick={closeModal}>
+                            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                                <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                                    <div className="absolute inset-0 bg-gray-900 opacity-75"></div>
+                                </div>
+
+                                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                                <div
+                                    className="inline-block align-bottom bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full slide-in"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="bg-gray-800 px-6 pt-6 pb-4">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="text-2xl font-bold text-white">
+                                                    {editingPolicy ? "Edit Policy" : "Add New Policy"}
+                                                </h3>
+                                                <button
+                                                    type="button"
+                                                    onClick={closeModal}
+                                                    className="text-gray-400 hover:text-gray-200 transition-colors"
+                                                >
+                                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label htmlFor="documentType" className="block text-sm font-medium text-gray-300 mb-1">
+                                                        Document Type / Category *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="documentType"
+                                                        name="documentType"
+                                                        value={formData.documentType}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                        placeholder="e.g., Contracts, Employee Records"
+                                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label htmlFor="retentionPeriod" className="block text-sm font-medium text-gray-300 mb-1">
+                                                        Retention Period *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="retentionPeriod"
+                                                        name="retentionPeriod"
+                                                        value={formData.retentionPeriod}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                        placeholder="e.g., 7 years, Permanent"
+                                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label htmlFor="dispositionAction" className="block text-sm font-medium text-gray-300 mb-1">
+                                                        Disposition Action *
+                                                    </label>
+                                                    <select
+                                                        id="dispositionAction"
+                                                        name="dispositionAction"
+                                                        value={formData.dispositionAction}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                                    >
+                                                        <option value="">Select an action...</option>
+                                                        <option value="Securely Destroy">Securely Destroy</option>
+                                                        <option value="Archive">Archive</option>
+                                                        <option value="Review">Review</option>
+                                                        <option value="Transfer to Archives">Transfer to Archives</option>
+                                                        <option value="Permanent Retention">Permanent Retention</option>
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label htmlFor="authorityCitation" className="block text-sm font-medium text-gray-300 mb-1">
+                                                        Authority / Citation *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="authorityCitation"
+                                                        name="authorityCitation"
+                                                        value={formData.authorityCitation}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                        placeholder="e.g., SOX, HIPAA, Internal Policy 301.A"
+                                                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-750 px-6 py-4 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-end sm:space-x-3">
+                                            <button
+                                                type="button"
+                                                onClick={closeModal}
+                                                className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                                            >
+                                                {editingPolicy ? "Update Policy" : "Create Policy"}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RetentionPolicyManager />);
+    </script>
+</body>
+</html>
