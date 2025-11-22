@@ -1,52 +1,56 @@
-
-
-
-import { File } from "buffer";
-
-export enum ConversationStatus {
-  DISCONNECTED,
-  CONNECTING,
-  CONNECTED,
-  ERROR,
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  formattedAddress: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
 }
 
-export type SerializableFile = {
-  name: string;
-  type: string;
-};
+export interface RoofMeasurement {
+  totalArea: number; // square feet
+  pitch: number; // roof pitch (e.g., 6/12)
+  facets: RoofFacet[];
+  complexity: 'simple' | 'moderate' | 'complex';
+}
 
-export interface TranscriptEntry {
+export interface RoofFacet {
   id: string;
-  speaker: 'user' | 'assistant' | 'system';
-  text: string;
-  file?: File | SerializableFile;
-  status?: 'pending' | 'complete' | 'error';
-  videoOperationResponse?: any;
+  area: number; // square feet
+  angle: number; // degrees
+  points: Array<{ lat: number; lng: number }>;
 }
 
-export const AVAILABLE_MODELS = [
-    'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-flash-lite-latest'
-];
-
-export interface AppSettings {
-  systemInstruction: string;
-  voice: string;
-  model: string;
+export interface MaterialOption {
+  id: string;
+  name: string;
+  pricePerSquareFoot: number;
+  warranty: string;
+  description: string;
 }
 
-export interface ChatSession {
-    id: string;
-    title: string;
-    transcript: TranscriptEntry[];
-    settings: AppSettings;
+export interface Quote {
+  id: string;
+  address: Address;
+  measurement: RoofMeasurement;
+  selectedMaterial: MaterialOption;
+  laborCost: number;
+  materialCost: number;
+  additionalCosts: {
+    permits: number;
+    disposal: number;
+    underlayment: number;
+    flashing: number;
+  };
+  totalCost: number;
+  dateCreated: Date;
 }
 
-export enum StreamSource {
-    NONE,
-    WEBCAM,
-    SCREEN,
+export interface DrawingMode {
+  isActive: boolean;
+  points: Array<{ lat: number; lng: number }>;
+  currentFacet: RoofFacet | null;
 }
-
-export const PREBUILT_VOICES = [
-    'Zephyr', 'Kore', 'Puck', 'Charon', 'Fenrir'
-];
