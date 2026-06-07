@@ -1,51 +1,1129 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gemini Audio Assistant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "clsx": "https://aistudiocdn.com/clsx@^2.1.1",
-    "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
-    "buffer": "https://aistudiocdn.com/buffer@^6.0.3"
-  }
-}
-</script>
-<style>
-  body {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPdCAYAAAD3OkKbAAAAAXNSR0IArs4c6QAAIABJREFUeF7snQeYFNX5x9/7t+52d9l92d2l3V12J7sL2b03u13iihsREUVEBMUuuN2CuAAKgggKruiKoggoKLiCBRUEBXeEu7v7uNvtbrv7/P6xOzuzOzu7Ozu7u7vzfp/nM/Nk5syZOTPz5syZOW8aQkBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE.g...AEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE...AEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE...BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE...CAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE...gertificate.crt'));
-  });
-});
-</script>
-<style>
-  body {
-    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAG3ApsDASIAAhEBAxEB/8QAGwABAAMBAQEBAAAAAAAAAAAAAAECAwQFBwb/xAAfAQEBAQEAAwEBAQEBAQAAAAAAAQIDBAUREhQhBjH/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6h11dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1' );
-    background-size: cover;
-    background-position: center center;
-    background-attachment: fixed;
-  }
-  body::before {
-    content: "";
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    background-color: rgba(17, 24, 39, 0.85); /* bg-gray-900 at 85% opacity */
-    z-index: -1;
-  }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(124, 58, 237, 0.2);
+            border: 2px solid #7c3aed;
+            color: #a78bfa;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: rgba(124, 58, 237, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .panel {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel h2 {
+            color: #a78bfa;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        }
+
+        .file-upload {
+            border: 2px dashed rgba(124, 58, 237, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .file-upload:hover {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .preview-area {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+
+        .preview-area img,
+        .preview-area video {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .response-area {
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 4px solid #7c3aed;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(124, 58, 237, 0.3);
+            border-top: 4px solid #7c3aed;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .video-stream {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 10px;
+            background: black;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: rgba(124, 58, 237, 0.3);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #7c3aed;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            background: rgba(124, 58, 237, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chat-container {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .message.user {
+            background: rgba(124, 58, 237, 0.2);
+            margin-left: 20%;
+        }
+
+        .message.assistant {
+            background: rgba(30, 58, 138, 0.3);
+            margin-right: 20%;
+        }
+
+        .voice-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .voice-btn {
+            padding: 10px;
+            background: rgba(124, 58, 237, 0.2);
+            border: 2px solid #7c3aed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .voice-btn.active {
+            background: #7c3aed;
+        }
+
+        .api-key-section {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Gemini AI Studio</h1>
+            <p>Advanced multimodal AI platform with image, video, and live streaming capabilities</p>
+        </div>
+
+        <div class="api-key-section">
+            <div class="input-group">
+                <label>🔑 Gemini API Key (Required)</label>
+                <input type="text" id="apiKey" placeholder="Enter your Gemini API key">
+                <small style="color: #a78bfa; display: block; margin-top: 5px;">Get your key at: https://aistudio.google.com/app/apikey</small>
+            </div>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('image')">📸 Image Analysis</button>
+            <button class="tab-btn" onclick="switchTab('video')">🎥 Video Analysis</button>
+            <button class="tab-btn" onclick="switchTab('generate')">✨ Generation</button>
+            <button class="tab-btn" onclick="switchTab('stream')">🎙️ Live Stream</button>
+            <button class="tab-btn" onclick="switchTab('files')">📁 File Analysis</button>
+            <button class="tab-btn" onclick="switchTab('chat')">💬 Chat</button>
+        </div>
+
+        <!-- IMAGE TAB -->
+        <div id="image-tab" class="tab-content active">
+            <div class="panel">
+                <h2>📸 Image Analysis & Editing</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="imageSystemPrompt" placeholder="Override system behavior (e.g., 'Act as a professional photographer and provide detailed technical analysis')">You are an expert image analyst. Provide detailed, technical analysis of images including composition, lighting, colors, subjects, and any text or objects present.</textarea>
+                </div>
+
+                <div class="file-upload" onclick="document.getElementById('imageInput').click()">
+                    <input type="file" id="imageInput" accept="image/*" multiple onchange="handleImageUpload(event)">
+                    <p>📤 Click to upload images or drag & drop</p>
+                    <small>Supports: JPG, PNG, GIF, WEBP</small>
+                </div>
+
+                <div class="input-group">
+                    <label>User Prompt</label>
+                    <textarea id="imagePrompt" placeholder="What would you like to know about this image?">Describe this image in detail.</textarea>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" onclick="analyzeImage()">🔍 Analyze Image</button>
+                    <button class="btn btn-secondary" onclick="editImage()">✏️ Edit/Transform</button>
+                    <button class="btn btn-secondary" onclick="extractText()">📝 Extract Text</button>
+                </div>
+
+                <div id="imagePreview" class="preview-area"></div>
+                <div id="imageLoading" class="loading"><div class="spinner"></div><p>Processing...</p></div>
+                <div id="imageResponse" class="response-area"></div>
+            </div>
+        </div>
+
+        <!-- VIDEO TAB -->
+        <div id="video-tab" class="tab-content">
+            <div class="panel">
+                <h2>🎥 Video Analysis & Generation</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="videoSystemPrompt" placeholder="Override system behavior">You are an expert video analyst. Provide comprehensive analysis including scene descriptions, actions, audio transcription, technical quality, and storytelling elements.</textarea>
+                </div>
+
+                <div class="file-upload" onclick="document.getElementById('videoInput').click()">
+                    <input type="file" id="videoInput" accept="video/*" onchange="handleVideoUpload(event)">
+                    <p>📤 Click to upload video</p>
+                    <small>Supports: MP4, MOV, AVI, WEBM (max 2GB)</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Analysis Type</label>
+                    <select id="videoAnalysisType">
+                        <option value="full">Full Analysis</option>
+                        <option value="summary">Quick Summary</option>
+                        <option value="transcript">Transcription Only</option>
+                        <option value="action">Action Detection</option>
+                        <option value="scene">Scene Breakdown</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>User Prompt</label>
+                    <textarea id="videoPrompt" placeholder="What would you like to analyze?">Provide a detailed summary of this video.</textarea>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" onclick="analyzeVideo()">🎬 Analyze Video</button>
+                    <button class="btn btn-secondary" onclick="generateVideoPrompt()">✨ Generate Video Prompt</button>
+                </div>
+
+                <div id="videoPreview" class="preview-area"></div>
+                <div id="videoLoading" class="loading"><div class="spinner"></div><p>Processing video...</p></div>
+                <div id="videoResponse" class="response-area"></div>
+            </div>
+        </div>
+
+        <!-- GENERATION TAB -->
+        <div id="generate-tab" class="tab-content">
+            <div class="panel">
+                <h2>✨ Content Generation</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="genSystemPrompt" placeholder="Override system behavior">You are a creative content generator. Create detailed, engaging content based on user descriptions.</textarea>
+                </div>
+
+                <div class="grid">
+                    <div>
+                        <div class="input-group">
+                            <label>Generation Type</label>
+                            <select id="genType">
+                                <option value="text">Text/Story</option>
+                                <option value="code">Code</option>
+                                <option value="video-script">Video Script</option>
+                                <option value="image-prompt">Image Prompt</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="input-group">
+                            <label>Model</label>
+                            <select id="genModel">
+                                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Generation Prompt</label>
+                    <textarea id="genPrompt" placeholder="Describe what you want to generate..." style="min-height: 200px;"></textarea>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="input-group">
+                        <label>Temperature: <span id="tempValue">0.7</span></label>
+                        <input type="range" class="slider" id="temperature" min="0" max="2" step="0.1" value="0.7" onchange="document.getElementById('tempValue').textContent = this.value">
+                    </div>
+                    <div class="input-group">
+                        <label>Max Tokens: <span id="tokensValue">2048</span></label>
+                        <input type="range" class="slider" id="maxTokens" min="256" max="8192" step="256" value="2048" onchange="document.getElementById('tokensValue').textContent = this.value">
+                    </div>
+                </div>
+
+                <button class="btn" onclick="generateContent()">✨ Generate</button>
+
+                <div id="genLoading" class="loading"><div class="spinner"></div><p>Generating...</p></div>
+                <div id="genResponse" class="response-area"></div>
+            </div>
+        </div>
+
+        <!-- LIVE STREAM TAB -->
+        <div id="stream-tab" class="tab-content">
+            <div class="panel">
+                <h2>🎙️ Live Stream with Gemini</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="streamSystemPrompt" placeholder="Override system behavior">You are a live streaming assistant. Respond naturally and conversationally to what you see and hear.</textarea>
+                </div>
+
+                <div class="grid">
+                    <div>
+                        <video id="videoStream" class="video-stream" autoplay muted></video>
+                        <canvas id="canvasStream" style="display:none;"></canvas>
+                    </div>
+                    <div>
+                        <h3 style="color: #a78bfa; margin-bottom: 15px;">Voice Selection</h3>
+                        <div class="voice-selector">
+                            <div class="voice-btn active" onclick="selectVoice('Puck')">🎭 Puck</div>
+                            <div class="voice-btn" onclick="selectVoice('Charon')">🎪 Charon</div>
+                            <div class="voice-btn" onclick="selectVoice('Kore')">🎵 Kore</div>
+                            <div class="voice-btn" onclick="selectVoice('Fenrir')">🔊 Fenrir</div>
+                            <div class="voice-btn" onclick="selectVoice('Aoede')">🎤 Aoede</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Stream Mode</label>
+                            <select id="streamMode">
+                                <option value="camera">Camera Only</option>
+                                <option value="screen">Screen Share</option>
+                                <option value="both">Camera + Screen</option>
+                            </select>
+                        </div>
+
+                        <div class="controls">
+                            <button class="btn" onclick="startStream()">▶️ Start Stream</button>
+                            <button class="btn btn-secondary" onclick="stopStream()">⏹️ Stop Stream</button>
+                            <button class="btn btn-secondary" onclick="captureFrame()">📸 Capture Frame</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Ask about the stream</label>
+                    <textarea id="streamPrompt" placeholder="What do you see? What's happening?"></textarea>
+                </div>
+
+                <button class="btn" onclick="analyzeStream()">🔍 Analyze Current Frame</button>
+
+                <div id="streamLoading" class="loading"><div class="spinner"></div><p>Analyzing stream...</p></div>
+                <div id="streamResponse" class="response-area"></div>
+            </div>
+        </div>
+
+        <!-- FILES TAB -->
+        <div id="files-tab" class="tab-content">
+            <div class="panel">
+                <h2>📁 File Analysis (All Types)</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="fileSystemPrompt" placeholder="Override system behavior">You are a comprehensive file analyst. Analyze and explain any file type including documents, code, data files, and more.</textarea>
+                </div>
+
+                <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" multiple onchange="handleFileUpload(event)">
+                    <p>📤 Upload any file type</p>
+                    <small>PDF, DOCX, TXT, CSV, JSON, XML, Code files, etc.</small>
+                </div>
+
+                <div id="fileList" class="file-list"></div>
+
+                <div class="input-group">
+                    <label>Analysis Prompt</label>
+                    <textarea id="filePrompt" placeholder="What would you like to know about these files?">Analyze these files and provide a comprehensive summary.</textarea>
+                </div>
+
+                <button class="btn" onclick="analyzeFiles()">📊 Analyze Files</button>
+
+                <div id="fileLoading" class="loading"><div class="spinner"></div><p>Analyzing files...</p></div>
+                <div id="fileResponse" class="response-area"></div>
+            </div>
+        </div>
+
+        <!-- CHAT TAB -->
+        <div id="chat-tab" class="tab-content">
+            <div class="panel">
+                <h2>💬 Conversational Chat</h2>
+
+                <div class="input-group">
+                    <label>System Instructions</label>
+                    <textarea id="chatSystemPrompt" placeholder="Override system behavior">You are a helpful, knowledgeable AI assistant. Be conversational, friendly, and provide detailed answers.</textarea>
+                </div>
+
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages"></div>
+                    <div>
+                        <textarea id="chatInput" placeholder="Type your message..." style="min-height: 80px;"></textarea>
+                        <div class="controls" style="margin-top: 10px;">
+                            <button class="btn" onclick="sendChat()">💬 Send</button>
+                            <button class="btn btn-secondary" onclick="clearChat()">🗑️ Clear Chat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentVoice = 'Puck';
+        let stream = null;
+        let uploadedImages = [];
+        let uploadedVideo = null;
+        let uploadedFiles = [];
+        let chatHistory = [];
+
+        // API Configuration
+        const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+
+        function getApiKey() {
+            const key = document.getElementById('apiKey').value.trim();
+            if (!key) {
+                alert('Please enter your Gemini API key first!');
+                return null;
+            }
+            return key;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Image handling
+        async function handleImageUpload(event) {
+            const files = event.target.files;
+            uploadedImages = [];
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+
+                    uploadedImages.push({
+                        data: e.target.result.split(',')[1],
+                        mimeType: file.type
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function analyzeImage() {
+            const apiKey = getApiKey();
+            if (!apiKey || uploadedImages.length === 0) {
+                alert('Please upload images first!');
+                return;
+            }
+
+            const loading = document.getElementById('imageLoading');
+            const response = document.getElementById('imageResponse');
+            loading.classList.add('active');
+            response.textContent = '';
+
+            const systemPrompt = document.getElementById('imageSystemPrompt').value;
+            const userPrompt = document.getElementById('imagePrompt').value;
+
+            const parts = [
+                { text: systemPrompt + '\n\n' + userPrompt }
+            ];
+
+            uploadedImages.forEach(img => {
+                parts.push({
+                    inline_data: {
+                        mime_type: img.mimeType,
+                        data: img.data
+                    }
+                });
+            });
+
+            try {
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts }]
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function editImage() {
+            const promptText = prompt('Enter editing instructions:', 'Make this image more vibrant and increase contrast');
+            if (!promptText) return;
+
+            document.getElementById('imagePrompt').value = promptText;
+            await analyzeImage();
+        }
+
+        async function extractText() {
+            document.getElementById('imagePrompt').value = 'Extract all text from this image with exact formatting and layout.';
+            await analyzeImage();
+        }
+
+        // Video handling
+        async function handleVideoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            uploadedVideo = file;
+            const preview = document.getElementById('videoPreview');
+            preview.innerHTML = '';
+
+            const video = document.createElement('video');
+            video.controls = true;
+            video.src = URL.createObjectURL(file);
+            preview.appendChild(video);
+        }
+
+        async function analyzeVideo() {
+            const apiKey = getApiKey();
+            if (!apiKey || !uploadedVideo) {
+                alert('Please upload a video first!');
+                return;
+            }
+
+            const loading = document.getElementById('videoLoading');
+            const response = document.getElementById('videoResponse');
+            loading.classList.add('active');
+            response.textContent = 'Uploading video... This may take a moment.';
+
+            try {
+                // First upload the file
+                const uploadResponse = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Goog-Upload-Protocol': 'resumable',
+                        'X-Goog-Upload-Command': 'start',
+                        'X-Goog-Upload-Header-Content-Length': uploadedVideo.size,
+                        'X-Goog-Upload-Header-Content-Type': uploadedVideo.type,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        file: { display_name: uploadedVideo.name }
+                    })
+                });
+
+                const uploadUrl = uploadResponse.headers.get('X-Goog-Upload-URL');
+
+                // Upload the actual file
+                await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Length': uploadedVideo.size,
+                        'X-Goog-Upload-Offset': '0',
+                        'X-Goog-Upload-Command': 'upload, finalize'
+                    },
+                    body: uploadedVideo
+                });
+
+                const fileDataResponse = await fetch(uploadUrl + '&key=' + apiKey);
+                const fileData = await fileDataResponse.json();
+
+                response.textContent = 'Video uploaded. Analyzing...';
+
+                // Wait for processing
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                const systemPrompt = document.getElementById('videoSystemPrompt').value;
+                const userPrompt = document.getElementById('videoPrompt').value;
+                const analysisType = document.getElementById('videoAnalysisType').value;
+
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: systemPrompt + '\n\nAnalysis Type: ' + analysisType + '\n\n' + userPrompt },
+                                { file_data: { mime_type: fileData.file.mimeType, file_uri: fileData.file.uri } }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function generateVideoPrompt() {
+            const description = prompt('Describe the video you want to create:', 'A cinematic montage of a city at sunset with drone footage');
+            if (!description) return;
+
+            const apiKey = getApiKey();
+            if (!apiKey) return;
+
+            const loading = document.getElementById('videoLoading');
+            const response = document.getElementById('videoResponse');
+            loading.classList.add('active');
+
+            try {
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Generate a detailed video generation prompt for: ${description}\n\nInclude: scene descriptions, camera movements, lighting, audio, pacing, and technical specifications.`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Content generation
+        async function generateContent() {
+            const apiKey = getApiKey();
+            if (!apiKey) return;
+
+            const loading = document.getElementById('genLoading');
+            const response = document.getElementById('genResponse');
+            loading.classList.add('active');
+            response.textContent = '';
+
+            const systemPrompt = document.getElementById('genSystemPrompt').value;
+            const userPrompt = document.getElementById('genPrompt').value;
+            const model = document.getElementById('genModel').value;
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const maxTokens = parseInt(document.getElementById('maxTokens').value);
+
+            try {
+                const result = await fetch(`${API_BASE}/models/${model}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: systemPrompt + '\n\n' + userPrompt }]
+                        }],
+                        generationConfig: {
+                            temperature: temperature,
+                            maxOutputTokens: maxTokens
+                        }
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Live streaming
+        function selectVoice(voice) {
+            currentVoice = voice;
+            document.querySelectorAll('.voice-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        async function startStream() {
+            const mode = document.getElementById('streamMode').value;
+
+            try {
+                if (mode === 'camera' || mode === 'both') {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+                } else if (mode === 'screen') {
+                    stream = await navigator.mediaDevices.getDisplayMedia({
+                        video: true,
+                        audio: true
+                    });
+                }
+
+                document.getElementById('videoStream').srcObject = stream;
+                alert('Stream started! Use "Capture Frame" to analyze what\'s on screen.');
+            } catch (error) {
+                alert('Error starting stream: ' + error.message);
+            }
+        }
+
+        function stopStream() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                document.getElementById('videoStream').srcObject = null;
+                stream = null;
+            }
+        }
+
+        function captureFrame() {
+            const video = document.getElementById('videoStream');
+            const canvas = document.getElementById('canvasStream');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            alert('Frame captured! Click "Analyze Current Frame" to analyze it.');
+        }
+
+        async function analyzeStream() {
+            const apiKey = getApiKey();
+            if (!apiKey) return;
+
+            const canvas = document.getElementById('canvasStream');
+            const imageData = canvas.toDataURL('image/jpeg').split(',')[1];
+
+            const loading = document.getElementById('streamLoading');
+            const response = document.getElementById('streamResponse');
+            loading.classList.add('active');
+
+            const systemPrompt = document.getElementById('streamSystemPrompt').value;
+            const userPrompt = document.getElementById('streamPrompt').value;
+
+            try {
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: systemPrompt + '\n\n' + userPrompt },
+                                { inline_data: { mime_type: 'image/jpeg', data: imageData } }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // File handling
+        async function handleFileUpload(event) {
+            uploadedFiles = Array.from(event.target.files);
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '<h3 style="color: #a78bfa; margin-bottom: 10px;">Uploaded Files:</h3>';
+
+            uploadedFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <span>📄 ${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
+                    <button class="btn" style="padding: 5px 10px;" onclick="removeFile(${index})">Remove</button>
+                `;
+                fileList.appendChild(item);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            document.getElementById('fileInput').value = '';
+            handleFileUpload({ target: { files: uploadedFiles } });
+        }
+
+        async function analyzeFiles() {
+            const apiKey = getApiKey();
+            if (!apiKey || uploadedFiles.length === 0) {
+                alert('Please upload files first!');
+                return;
+            }
+
+            const loading = document.getElementById('fileLoading');
+            const response = document.getElementById('fileResponse');
+            loading.classList.add('active');
+            response.textContent = 'Processing files...';
+
+            try {
+                const fileContents = await Promise.all(
+                    uploadedFiles.map(file => {
+                        return new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                resolve({
+                                    name: file.name,
+                                    type: file.type,
+                                    content: e.target.result
+                                });
+                            };
+                            reader.readAsText(file);
+                        });
+                    })
+                );
+
+                const systemPrompt = document.getElementById('fileSystemPrompt').value;
+                const userPrompt = document.getElementById('filePrompt').value;
+
+                let combinedContent = fileContents.map(f =>
+                    `File: ${f.name}\nType: ${f.type}\nContent:\n${f.content}\n\n---\n\n`
+                ).join('');
+
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: systemPrompt + '\n\n' + userPrompt + '\n\nFiles:\n' + combinedContent
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await result.json();
+                response.textContent = data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                response.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Chat
+        async function sendChat() {
+            const apiKey = getApiKey();
+            if (!apiKey) return;
+
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('chatMessages');
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = message;
+            messagesDiv.appendChild(userMsg);
+
+            chatHistory.push({
+                role: 'user',
+                parts: [{ text: message }]
+            });
+
+            input.value = '';
+
+            // Get response
+            try {
+                const systemPrompt = document.getElementById('chatSystemPrompt').value;
+
+                const result = await fetch(`${API_BASE}/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [
+                            { parts: [{ text: systemPrompt }] },
+                            ...chatHistory
+                        ]
+                    })
+                });
+
+                const data = await result.json();
+                const responseText = data.candidates[0].content.parts[0].text;
+
+                const assistantMsg = document.createElement('div');
+                assistantMsg.className = 'message assistant';
+                assistantMsg.textContent = responseText;
+                messagesDiv.appendChild(assistantMsg);
+
+                chatHistory.push({
+                    role: 'model',
+                    parts: [{ text: responseText }]
+                });
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function clearChat() {
+            chatHistory = [];
+            document.getElementById('chatMessages').innerHTML = '';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                const activeTab = document.querySelector('.tab-content.active').id;
+                if (activeTab === 'chat-tab') sendChat();
+            }
+        });
+    </script>
+</body>
 </html>
